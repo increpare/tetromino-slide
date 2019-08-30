@@ -64,10 +64,19 @@ var tetrominos = [
 			[ 1, 1, 1, 1, ],
 		],
 		[
-			[ 1 ], 
-			[ 1 ], 
-			[ 1 ],
-			[ 1 ], 			
+			[ 0, 0, 1, 0 ], 
+			[ 0, 0, 1, 0 ], 
+			[ 0, 0, 1, 0 ],
+			[ 0, 0, 1, 0 ], 			
+		],
+		[
+			[ 1, 1, 1, 1, ],
+		],
+		[
+			[ 0, 1, 0, 0 ], 
+			[ 0, 1, 0, 0 ], 
+			[ 0, 1, 0, 0 ],
+			[ 0, 1, 0, 0 ], 			
 		],
 	],
 	// J-piece
@@ -77,18 +86,19 @@ var tetrominos = [
 			[ 1, 1, 1, ],
 		],
 		[
-			[ 1, 1, ],
-			[ 1, 0, ],
-			[ 1, 0, ],
+			[ 0, 1, 1, ],
+			[ 0, 1, 0, ],
+			[ 0, 1, 0, ],
 		],
 		[
+			[ 0, 0, 0, ],
 			[ 1, 1, 1, ],
 			[ 0, 0, 1, ],
 		],
 		[
-			[ 0, 1, ],
-			[ 0, 1,  ],
-			[ 1, 1,  ],
+			[ 0, 1, 0 ],
+			[ 0, 1, 0 ],
+			[ 1, 1, 0 ],
 		],
 	],
 	// L-piece
@@ -98,18 +108,18 @@ var tetrominos = [
 			[ 1, 1, 1, ],
 		],
 		[
-			[ 1, 0, ],
-			[ 1, 0, ],
-			[ 1, 1, ],
+			[ 0, 1, 0, ],
+			[ 0, 1, 0, ],
+			[ 0, 1, 1, ],
 		],
 		[
 			[ 1, 1, 1, ],
 			[ 1, 0, 0, ],
 		],
 		[
-			[ 1, 1,  ],
-			[ 0, 1,  ],
-			[ 0, 1,  ],
+			[ 1, 1, 0, ],
+			[ 0, 1, 0, ],
+			[ 0, 1, 0, ],
 		],
 	],
 	// O-piece
@@ -126,41 +136,44 @@ var tetrominos = [
 			[ 1, 1, 0, ],
 		],
 		[
-			[ 1, 0, ],
-			[ 1, 1, ],
-			[ 0, 1, ],
+			[ 0, 1, 0, ],
+			[ 0, 1, 1, ],
+			[ 0, 0, 1, ],
 		],
 		[
+			[ 0, 0, 0, ],
 			[ 0, 1, 1, ],
 			[ 1, 1, 0, ],
 		],
 		[
-			[ 1, 0,  ],
-			[ 1, 1,  ],
-			[ 0, 1,  ],
+			[ 1, 0,0,  ],
+			[ 1, 1,0,  ],
+			[ 0, 1,0,  ],
 		],
 	],
 	// T-Piece
 	[
 		[
-			[ 1, 1, 1, ],
-			[ 0, 1, 0, ],
-		],
-		[
 			[ 0, 1, 0, ],
 			[ 1, 1, 1, ],
 		],
+
 		
 		[
-			[ 0, 1, ],
-			[ 1, 1, ],
-			[ 0, 1, ],
+			[ 0,1, 0, ],
+			[ 0,1, 1, ],
+			[ 0,1, 0, ],
+		],
+
+		[
+			[ 1, 1, 1, ],
+			[ 0, 1, 0, ],
 		],
 		
 		[
-			[ 1, 0, ],
-			[ 1, 1, ],
-			[ 1, 0, ],
+			[ 0, 1,0, ],
+			[ 1, 1,0, ],
+			[ 0, 1,0, ],
 		],
 
 	],
@@ -171,18 +184,19 @@ var tetrominos = [
 			[ 0, 1, 1, ],
 		],
 		[
-			[ 0, 1, ],
-			[ 1, 1, ],
-			[ 1, 0, ],
+			[ 0,0, 1, ],
+			[ 0,1, 1, ],
+			[ 0,1, 0, ],
 		],
 		[
+			[ 0, 0, 0, ],
 			[ 1, 1, 0, ],
 			[ 0, 1, 1, ],
 		],
 		[
-			[ 0, 1,  ],
-			[ 1, 1,  ],
-			[ 1, 0,  ],
+			[ 0, 1, 0, ],
+			[ 1, 1, 0, ],
+			[ 1, 0, 0, ],
 		],
 	],
 ]
@@ -207,6 +221,27 @@ var lookupdat=[
 
 ]
 
+
+var lookupdat_würfel=[
+	[4,0],//0000
+	[1,0],//0001
+	[3,0],//0010
+	[2,0],//0011
+	[0,0],//0100
+	[1,1],//0101*
+	[2,1],//0110*
+	[6,0],//0111
+	[0,2],//1000
+	[1,2],//1001*
+	[2,2],//1010*
+	[5,1],//1011
+	[0,1],//1100
+	[5,0],//1101
+	[6,1],//1110
+	[5,2],//1111
+
+]
+
 function binstr(d){
 	var ts=d.toString(2);
 	while(ts.length<4){
@@ -220,11 +255,12 @@ function lookup(figuretyp,datum){
 	var tx=-1;
 	var ty=-1;
 	var lud=lookupdat[datum]
+
+	if (lookupdat===3){
+		lud=lookupdat_würfel[datum];
+	}
 	tx=lud[0];
 	ty=lud[1];
-	if (figuretyp===3){
-		tx-=2;
-	}
 	return [tx,ty];
 }
 
@@ -263,9 +299,89 @@ function Verbindungen_Ausrechnen(raster,farbe){
 
 var verbindungen_ausgerechnet=false;
 
+
+var zukünftiges=-1;
+var zukünftiges_drehung=-1;
+
 var nächst=-1;
 var nächst_drehung=-1;
 var tasche=[0,1,2,3,4,5,6];
+
+async function prüfZeilen(){
+	var dscore=0;
+	var zeilen=[];
+	for (var j=0;j<raster_h;j++){
+		var voll=true;
+		for (var i=0;i<raster_b;i++){
+			if (zustand[j][i]===0){
+				voll=false;
+				continue;
+			}
+		}
+		if (voll){		
+			dscore++;
+			for (var i=0;i<raster_b;i++){
+				zustand[j][i]=0;
+				//2*v_rechts+4*v_links+8*v_unten+16*v_oben
+				if (j>0){
+					if ( (zustand[j-1][i]&8) === 8 ){
+						zustand[j-1][i]-=8;
+					}
+				} 
+				if (j<raster_h-1){
+					if ( (zustand[j+1][i]&16) === 16 ){
+						zustand[j+1][i]-=16;
+					}					
+				}
+			}
+			zeilen.push(j);
+		}
+	}
+
+	dscore=dscore*dscore;	
+	if (dscore>0){
+		redraw();		
+		//kleine pause
+		await sleep(30);
+		//fallen lassen
+
+		for (var j_index=0;j_index<zeilen.length;j_index++){
+			var j_leer = zeilen[j_index];
+			for (var j=j_leer;j>0;j--){
+				for (var i=0;i<raster_b;i++){
+					zustand[j][i]=zustand[j-1][i];
+					zustand[j-1][i]=0;
+				}
+			}
+		}
+		redraw();
+	}
+
+	score+=dscore;
+	if (score>highscore){
+		highscore=score;
+		localStorage.setItem('myhighscore',highscore);
+	}
+}
+function wähleNeuesStück(){
+	nächst=zukünftiges;
+	nächst_drehung=zukünftiges_drehung;
+
+	zukünftiges_index=holZufälligeIntInklusi(0,tasche.length-1);
+	zukünftiges=tasche[zukünftiges_index];	
+	tasche.splice(zukünftiges_index,1);
+	// if (nächst===6){
+	// 	zukünftiges=4;
+	// } else {
+	// 	zukünftiges=6;
+
+	// }
+	zukünftiges_drehung=holZufälligeIntInklusi(0,tetrominos[zukünftiges].length-1)
+	
+	if (tasche.length===0){
+		tasche=[0,1,2,3,4,5,6];		
+	}
+}
 
 function darfPlatzieren(stück,x,y){
 
@@ -275,8 +391,10 @@ function darfPlatzieren(stück,x,y){
 		var globale_x=x+i;
 		for (var j=0;j<nächst_z_h;j++){
 			var globale_y=y+j;
-
-			if (globale_x>=raster_b || globale_y>=raster_h){
+			if (stück[j][i]===0){
+				continue;
+			}
+			if (globale_x>=raster_b || globale_y>=raster_h || globale_x<0 || globale_y<0){
 				return false;
 			}
 
@@ -287,6 +405,19 @@ function darfPlatzieren(stück,x,y){
 	}
 	return true;
 }
+
+var template_namen=[
+"template_1",
+"template_2",
+"template_3",
+"template_4",
+"template_5",
+"template_6",
+"template_7"
+];
+
+var soff=0;
+
 function projizieren(){	
 	var stück=tetrominos[nächst][nächst_drehung];
 	var nächst_z_h=stück.length;
@@ -295,7 +426,7 @@ function projizieren(){
 	var ox=15;
 	var oy=29-4*8;
 
-	var sx=5-Math.ceil(nächst_z_b/2);
+	var sx=5-Math.ceil(nächst_z_b/2)+soff;
 	var sy=0;
 
 	var px=sx;
@@ -305,18 +436,21 @@ function projizieren(){
 		py++;
 	}
 
-	for (var i=0;i<nächst_z_b;i++){
-		var globale_z_x=ox+8*px+8*i;
-		for (var j=0;j<nächst_z_h;j++){
-			if (py+j<2){
+	if (moving===false){
 
-			}
-			if (stück[j][i]>0){
-				var globale_z_y=oy+8*py+8*j;
-				var lu = lookup(nächst,stück[j][i]);
-				var tx=lu[0]*8;
-				var ty=lu[1]*8;	
-				ctx.drawImage(images["template_umriss"],tx,ty,8,8,globale_z_x,globale_z_y,8,8);
+		for (var i=0;i<nächst_z_b;i++){
+			var globale_z_x=ox+8*px+8*i;
+			for (var j=0;j<nächst_z_h;j++){
+				if (py+j<2){
+
+				}
+				if (stück[j][i]>0){
+					var globale_z_y=oy+8*py+8*j;
+					var lu = lookup(nächst,stück[j][i]);
+					var tx=lu[0]*8;
+					var ty=lu[1]*8;	
+					ctx.drawImage(images["template_umriss"],tx,ty,8,8,globale_z_x,globale_z_y,8,8);
+				}
 			}
 		}
 	}
@@ -328,13 +462,12 @@ async function resetGame(){
 
 	moving=true;
 
+	gameover=false;
 	tasche=[0,1,2,3,4,5,6];
 
-	nächst_index=holZufälligeIntInklusi(0,tasche.length-1);
-	nächst=tasche[nächst_index];
-	tasche.splice(nächst_index,1);
+	wähleNeuesStück();
+	wähleNeuesStück();
 
-	nächst_drehung=holZufälligeIntInklusi(0,tetrominos[nächst].length-1)
 	
 	playSound(90509500);
 	gameover=false;
@@ -427,25 +560,53 @@ function redraw(){
 	var nox=115;
 	var noy=113;
 	var nächst_stück=tetrominos[nächst][nächst_drehung];
-
 	var nächst_z_h=nächst_stück.length;
 	var nächst_z_b=nächst_stück[0].length;
 	var nächst_h=nächst_z_h*8;
 	var nächst_b=nächst_z_b*8;
-	nox+=(4*8-nächst_b)/2;
-	noy+=(4*8-nächst_h)/2;
-	for (var i=0;i<nächst_z_b;i++){
-		for (var j=0;j<nächst_z_h;j++){
-			var z=nächst_stück[j][i];
+	
+	var zukünftiges_stück=tetrominos[zukünftiges][zukünftiges_drehung];
+	var zukünftiges_z_h=zukünftiges_stück.length;
+	var zukünftiges_z_b=zukünftiges_stück[0].length;
+	var zukünftiges_h=zukünftiges_z_h*8;
+	var zukünftiges_b=zukünftiges_z_b*8;
+	
+
+	nox+=(4*8-zukünftiges_b)/2;
+	noy+=(4*8-zukünftiges_h)/2;
+	for (var i=0;i<zukünftiges_z_b;i++){
+		for (var j=0;j<zukünftiges_z_h;j++){
+			var z=zukünftiges_stück[j][i];
 			if (z!==0){
 				var x=nox+8*i;
 				var y=noy+8*j;
 				
-				var lu = lookup(nächst,nächst_stück[j][i]);
+				var lu = lookup(zukünftiges,zukünftiges_stück[j][i]);
+				var tx=8*lu[0];
+				var ty=8*lu[1];
+				ctx.drawImage(images[template_namen[zukünftiges]],tx,ty,8,8,x,y,8,8);
+			}
+		}
+	}
+
+	for (var i=0;i<raster_b;i++){
+		for (var j=verborgene_zeilen;j<raster_h;j++){
+			var z=zustand[j][i];
+			if (z!==0){
+				var sbx=15;
+				var sby=29;
+
+				var x=sbx+8*i;
+				var y=sby+8*(j-verborgene_zeilen);
+				
+				var datum=zustand[j][i];
+				var stücktyp=datum>>5;
+				console.log(stücktyp);
+				var lu = lookup(stücktyp,datum);
 				var tx=8*lu[0];
 				var ty=8*lu[1];
 
-				ctx.drawImage(images["template_1"],tx,ty,8,8,x,y,8,8);
+				ctx.drawImage(images[template_namen[stücktyp]],tx,ty,8,8,x,y,8,8);
 			}
 		}
 	}
@@ -588,80 +749,228 @@ function full(){
 }
 
 var moving=false;
+
+function ErzeugenMöglich(){
+	var stück=tetrominos[nächst][nächst_drehung];
+	var nächst_z_h=stück.length;
+	var nächst_z_b=stück[0].length;
+
+	var ox=15;
+	var oy=29-4*8;
+
+	var sx=5-Math.ceil(nächst_z_b/2);
+	var sy=0;
+
+	for (var i=0;i<nächst_z_b;i++){
+		var globale_z_x=sx+i;
+		for (var j=0;j<nächst_z_h;j++){
+			var globale_z_y=sy+j;
+			if (zustand[globale_z_y][globale_z_x]>0){
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 async function doMove(dx,dy){
+	//stück erzeugen
 
-	var anymoved=false;
 
-	clearAnim();
 
-	var trymove=true;
-	while(trymove){
-		trymove=false;
-		if (trypush(dx,dy)){
-			trymove=true;
-			anymoved=true;
+	if (dy==1){
+		if (ErzeugenMöglich()===false){
+			gameover=true;
+			return Promise.resolve(1);
 		}
+
+		var stück=tetrominos[nächst][nächst_drehung];
+		var nächst_z_h=stück.length;
+		var nächst_z_b=stück[0].length;
+
+		var ox=15;
+		var oy=29-4*8;
+
+		var sx=5-Math.ceil(nächst_z_b/2)+soff;
+		var sy=0;
+		soff=0;
+		for (var i=0;i<nächst_z_b;i++){
+			var globale_z_x=sx+i;
+			for (var j=0;j<nächst_z_h;j++){
+				var globale_z_y=sy+j;
+				zustand[globale_z_y][globale_z_x]=stück[j][i];
+			}
+		}
+
+		wähleNeuesStück();
 	}
 
-	if (anymoved===false) {
-		anim_phase=-1;
-		redraw();
-		await sleep(30);
-		anim_phase=1;
-		phase=1;
-		redraw();
-		return Promise.resolve(1);
-	}
-	playSound(11309707);
-
-	phase=1;
-	for( anim_phase=1;anim_phase<anim_frames;anim_phase++){
-		redraw();
-		await sleep(30);
-	}
 
 
-	phase=2;
-	clearAnim();
-	if (tryClear()){
-		playSound(53413900);//blip
-		await sleep(30);
-		for( anim_phase=0;anim_phase<2;anim_phase++){
-			redraw();
+
+	var bewegt=true;
+	while (bewegt){
+		bewegt=false;
+
+		var neuezustand=[];
+		for (var j=0;j<raster_h;j++){
+			var zeile=[];
+			for (var i=0;i<raster_b;i++){
+				zeile.push(0);
+			}
+			neuezustand.push(zeile);
+		}
+
+		for (var i=0;i<raster_b;i++){
+			for (var j=0;j<raster_h;j++){
+				if (zustand[j][i]===0){
+					anims[j][i]=0;
+				} else {
+					anims[j][i]=1;
+				}
+			}
+		}
+
+
+		var verarbeiten=true;
+		while (verarbeiten){
+			verarbeiten=false;
+
+			//bewegungen versperren
+
+			for (var i=0;i<raster_b;i++){
+				for (var j=0;j<raster_h;j++){
+					//wenn animation versperrt, mach propagation
+					if (zustand[j][i]>0 && anims[j][i]>0){
+						//prüf in der richtung der Bewegung
+						var tx=i+dx;
+						var ty=j+dy;
+						if (tx<0||ty<0||tx>=raster_b||ty>=raster_h){
+							anims[j][i]=0;
+							verarbeiten=true;
+						} else if (zustand[ty][tx]>0 && anims[ty][tx]===0){
+							anims[j][i]=0;
+							verarbeiten=true;							
+						} else {
+							//prüf verbundnen Ziegel
+							var datum = zustand[j][i];
+							//2*v_rechts+4*v_links+8*v_unten+16*v_oben
+							var v_oben=(datum>>4)&1;
+							var v_unten=(datum>>3)&1;
+							var v_links=(datum>>2)&1;
+							var v_rechts=(datum>>1)&1;
+							if (v_oben===1){
+								if (anims[j-1][i]==0){
+									anims[j][i]=0;
+									verarbeiten=true;													
+								}
+							}
+							if (v_unten===1){
+								if (anims[j+1][i]==0){
+									anims[j][i]=0;
+									verarbeiten=true;													
+								}
+							}
+							if (v_links===1){
+								if (anims[j][i-1]==0){
+									anims[j][i]=0;
+									verarbeiten=true;													
+								}
+							}
+							if (v_rechts===1){
+								if (anims[j][i+1]==0){
+									anims[j][i]=0;
+									verarbeiten=true;													
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//mach bewegungen
+		var was_ist_bewegt=false;
+		for (var i=0;i<raster_b;i++){
+			for (var j=0;j<raster_h;j++){
+				var datum=zustand[j][i];
+				if (datum!==0){
+					if (anims[j][i]===0){
+						neuezustand[j][i]=datum;
+					} else {
+						neuezustand[j+dy][i+dx]=datum;
+						anims[j][i]=0;
+						was_ist_bewegt=true;
+					}
+				}
+			}
+		}
+		zustand=neuezustand;
+
+		if (was_ist_bewegt){
+			bewegt=true;
+		}	
+
+		if (bewegt){
 			await sleep(30);
-		}
-		clearAnim();
-		redraw();
-		await sleep(30);
-	}
-
-	phase=3;
-	spawnRand(0);
-	for( anim_phase=0;anim_phase<2;anim_phase++){
-		redraw();
-		await sleep(30);
-	}
-	clearAnim();
-	redraw();
-
-
-	phase=4;
-	clearAnim();
-	if (tryClear()){
-		playSound(53413900);//blip
-		await sleep(30);
-		for( anim_phase=0;anim_phase<2;anim_phase++){
 			redraw();
-			await sleep(30);
+			// if (dx!==0){
+			// 	return Promise.resolve(1);				
+			// }
 		}
-		clearAnim();
-		redraw();
+
 	}
 
-	phase=0;
-	redraw();
+	await prüfZeilen();
 
 	return Promise.resolve(1);
+}
+
+function dsoff(ds){
+	var newsoff=soff+ds;
+
+	var stück=tetrominos[nächst][nächst_drehung];
+	var nächst_z_h=stück.length;
+	var nächst_z_b=stück[0].length;
+
+	var ox=15;
+	var oy=29-4*8;
+
+	var sx=5-Math.ceil(nächst_z_b/2)+newsoff;
+	var sy=0;
+
+	var px=sx;
+	var py=0;
+
+	if (darfPlatzieren(stück,sx,sy)){
+		soff=newsoff;
+	}
+}
+
+function oob(){
+	var stück=tetrominos[nächst][nächst_drehung];
+	var nächst_z_h=stück.length;
+	var nächst_z_b=stück[0].length;
+
+	var ox=15;
+	var oy=29-4*8;
+
+	var sx=5-Math.ceil(nächst_z_b/2)+soff;
+	var sy=0;
+
+	var px=sx;
+	var py=0;
+
+	if (darfPlatzieren(stück,sx,sy)===false){
+		if (soff<0){
+			soff++;
+			oob();
+		}
+		if (soff>0){
+			soff--;
+			oob();
+		}
+	}
 }
 
 async function doPress(i){
@@ -676,26 +985,26 @@ async function doPress(i){
 	
 	if (i===0){
 		// await doMove(0,-1);
-		redraw();
+		nächst_drehung=(nächst_drehung+1)%tetrominos[nächst].length;
+		oob();
 	} else if (i===1){
-		// await doMove(0,1);
-		redraw();
+		await doMove(0,1);
 	} else if (i===2){
-		// await doMove(-1,0);
-		redraw();
+		dsoff(-1);
+		await doMove(-1,0);
 	} else if (i===3){	
-		// await doMove(1,0);
-		redraw();
+		dsoff(1);
+		await doMove(1,0);
 	} else if (i===4){
-		// await resetGame();
-		redraw();
+		await resetGame();
 	} else if (i===5){
 		sprache=1-sprache;
 		// await resetGame();
-		redraw();
 	}
 
 	moving=false;
+	redraw();
+
 }
 
 function  getMousePos(evt) {
@@ -893,7 +1202,7 @@ function tryClear(){
   return todelete.length>0;
 }
 
-function handleKey(e){
+function handleKeyDown(e){
 	if (e.key==="ArrowUp"||e.key=="W"||e.key=="w"){
 		doPress(0);
 		e.preventDefault();
@@ -958,10 +1267,10 @@ function handleKeyUp(e){
 
 canvas.addEventListener("pointerdown",handleTap);
 canvas.addEventListener("pointerup",handleUntap);
-document.addEventListener("keydown",handleKey);
+document.addEventListener("keydown",handleKeyDown);
 document.addEventListener("keyup",handleKeyUp);
 
-highscore = parseInt(localStorage.getItem('highscore'));
+highscore = parseInt(localStorage.getItem('myhighscore'));
 if (Number.isNaN(highscore)){
 	highscore=0;
 }
