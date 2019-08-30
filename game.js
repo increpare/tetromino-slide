@@ -343,7 +343,7 @@ async function prüfZeilen(){
 		siegreich=true;
 	}
 
-	dscore=dscore*dscore;	
+	// dscore=dscore*dscore;	
 	if (dscore>0){
 		redraw();		
 		//kleine pause
@@ -369,10 +369,10 @@ async function prüfZeilen(){
 		redraw();
 	}
 
-	score+=dscore;
+	score=dscore;
 	if (score>highscore){
 		highscore=score;
-		localStorage.setItem('myhighscore',highscore);
+		localStorage.setItem('my_max_combo',highscore);
 	}
 }
 function wähleNeuesStück(){
@@ -486,7 +486,7 @@ soff=0;
 	wähleNeuesStück();
 
 	
-	playSound(79834907);
+	playSound(4159307);
 
 	zustand=[];
 	for (var j=0;j<raster_h;j++){
@@ -643,14 +643,14 @@ function redraw(){
 	// }
 
 
-	// for(var i=0;i<3;i++){
-	// 	var z_b=3;
-	// 	var z_h=5;
-	// 	var z_x=125;
-	// 	var z_y=43;
-	// 	var ziffer= Math.floor(highscore/(Math.pow(10,i)))%10;
-	// 	ctx.drawImage(images["ziffer_sch"],3*ziffer,0,z_b,z_h,z_x+4*i,z_y,z_b,z_h);
-	// }
+	for(var i=0;i<3;i++){
+		var z_b=3;
+		var z_h=5;
+		var z_x=125;
+		var z_y=161;
+		var ziffer= Math.floor(highscore/(Math.pow(10,i)))%10;
+		ctx.drawImage(images["ziffer_sch"],3*ziffer,0,z_b,z_h,z_x+4*i,z_y,z_b,z_h);
+	}
 
 
 	if (stumm){
@@ -1321,7 +1321,7 @@ canvas.addEventListener("pointerup",handleUntap);
 document.addEventListener("keydown",handleKeyDown);
 document.addEventListener("keyup",handleKeyUp);
 
-highscore = parseInt(localStorage.getItem('myhighscore'));
+highscore = parseInt(localStorage.getItem('my_max_combo'));
 if (Number.isNaN(highscore)){
 	highscore=0;
 }
