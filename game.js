@@ -1249,7 +1249,7 @@ function handleKeyDown(e){
 		e.preventDefault();
 		return false;
 	}
-	if (e.key==="ArrowDown"||e.key=="S"||e.key=="s"){
+	if (e.key==="ArrowDown"||e.key===" "||e.key=="S"||e.key=="s"){
 		doPress(1);
 		e.preventDefault();
 		return false;
@@ -1288,7 +1288,7 @@ function handleKeyUp(e){
 		pressed[0]=false;
 		redraw();
 	}
-	if (e.key==="ArrowDown"||e.key=="S"||e.key=="s"){
+	if (e.key==="ArrowDown"||e.key===" "||e.key=="S"||e.key=="s"){
 		pressed[1]=false;
 		redraw();
 	}
