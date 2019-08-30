@@ -38,7 +38,8 @@ var anim_phase;//goes to 10 say
 var anim;
 var spawn;
 
-var gameover;
+var verloren=false;
+var siegreich=false;
 
 var last=1;
 var laster=-1;
@@ -256,7 +257,7 @@ function lookup(figuretyp,datum){
 	var ty=-1;
 	var lud=lookupdat[datum]
 
-	if (lookupdat===3){
+	if (figuretyp===3){
 		lud=lookupdat_würfel[datum];
 	}
 	tx=lud[0];
@@ -338,11 +339,19 @@ async function prüfZeilen(){
 		}
 	}
 
+	if (dscore>=4){
+		siegreich=true;
+	}
+
 	dscore=dscore*dscore;	
 	if (dscore>0){
 		redraw();		
 		//kleine pause
-		await sleep(30);
+
+		if (!stumm){
+			playSound(6532707);
+		}
+		await sleep(50);
 		//fallen lassen
 
 		for (var j_index=0;j_index<zeilen.length;j_index++){
@@ -353,6 +362,9 @@ async function prüfZeilen(){
 					zustand[j-1][i]=0;
 				}
 			}
+
+			await sleep(50);
+			redraw();
 		}
 		redraw();
 	}
@@ -446,6 +458,9 @@ function projizieren(){
 				}
 				if (stück[j][i]>0){
 					var globale_z_y=oy+8*py+8*j;
+					if (globale_z_y<29){
+						continue;
+					}
 					var lu = lookup(nächst,stück[j][i]);
 					var tx=lu[0]*8;
 					var ty=lu[1]*8;	
@@ -453,24 +468,26 @@ function projizieren(){
 				}
 			}
 		}
+
 	}
 
 
 }
 
 async function resetGame(){
-
+soff=0;
 	moving=true;
 
-	gameover=false;
+	verloren=false;
+	siegreich=false;
 	tasche=[0,1,2,3,4,5,6];
 
 	wähleNeuesStück();
 	wähleNeuesStück();
 
 	
-	playSound(90509500);
-	gameover=false;
+	playSound(79834907);
+
 	zustand=[];
 	for (var j=0;j<raster_h;j++){
 		var zeile=[];
@@ -549,6 +566,9 @@ var piece_frames={
 
 var bg_name =["winbg2_en","winbg2_de"];
 
+var goimg_name =["verloren_en","verloren_de"];
+var siegimg_name =["siegreich_en","siegreich_de"];
+
 function redraw(){
 
 	
@@ -558,7 +578,7 @@ function redraw(){
 
 	//nächst
 	var nox=115;
-	var noy=113;
+	var noy=91;
 	var nächst_stück=tetrominos[nächst][nächst_drehung];
 	var nächst_z_h=nächst_stück.length;
 	var nächst_z_b=nächst_stück[0].length;
@@ -613,44 +633,51 @@ function redraw(){
 
 	projizieren();
 
-	for(var i=0;i<3;i++){
-		var z_b=3;
-		var z_h=5;
-		var z_x=125;
-		var z_y=70;
-		var ziffer= Math.floor(score/(Math.pow(10,i)))%10;
-		ctx.drawImage(images["ziffer_sch"],3*ziffer,0,z_b,z_h,z_x+4*i,z_y,z_b,z_h);
+	// for(var i=0;i<3;i++){
+	// 	var z_b=3;
+	// 	var z_h=5;
+	// 	var z_x=125;
+	// 	var z_y=70;
+	// 	var ziffer= Math.floor(score/(Math.pow(10,i)))%10;
+	// 	ctx.drawImage(images["ziffer_sch"],3*ziffer,0,z_b,z_h,z_x+4*i,z_y,z_b,z_h);
+	// }
+
+
+	// for(var i=0;i<3;i++){
+	// 	var z_b=3;
+	// 	var z_h=5;
+	// 	var z_x=125;
+	// 	var z_y=43;
+	// 	var ziffer= Math.floor(highscore/(Math.pow(10,i)))%10;
+	// 	ctx.drawImage(images["ziffer_sch"],3*ziffer,0,z_b,z_h,z_x+4*i,z_y,z_b,z_h);
+	// }
+
+
+	if (stumm){
+		ctx.drawImage(images["btn_stumm_aus"],137,175);
 	}
-
-
-	for(var i=0;i<3;i++){
-		var z_b=3;
-		var z_h=5;
-		var z_x=125;
-		var z_y=43;
-		var ziffer= Math.floor(highscore/(Math.pow(10,i)))%10;
-		ctx.drawImage(images["ziffer_sch"],3*ziffer,0,z_b,z_h,z_x+4*i,z_y,z_b,z_h);
-	}
-
-
-	if (gameover){
-		ctx.fillStyle = "#FF0000";
-		for (var i=0;i<4;i++){
-			ctx.fillRect( 55+4*i, 52, 1, 1 );
-		}
-	}
-
-	for(i=0;i<6;i++){
+	for(i=0;i<pressed.length;i++){
 		if (pressed[i]){
 			var dat = image_x_y[i];
 			ctx.drawImage(images[dat[sprache]],dat[2],dat[3]);
 		}
+	}
+
+
+	if (verloren){
+		ctx.drawImage(images[goimg_name[sprache]],15,29);
+	} else if (siegreich){		
+		ctx.drawImage(images[siegimg_name[sprache]],15,29);
 	}
 }
 
 var image_names=[
 	"winbg2_de",
 	"winbg2_en",
+	"verloren_en",
+	"verloren_de",
+	"siegreich_en",
+	"siegreich_de",
 	"template_1",
 	"template_2",
 	"template_3",
@@ -672,7 +699,12 @@ var image_names=[
 	"btn_neustart_en",
 	"btn_sprache_de",
 	"btn_sprache_en",
+	"btn_stumm_gedrückt",
+	"btn_stumm_aus",
+	"btn_stumm_aus_gedrückt",
 	];
+
+var stumm=false;
 
 var image_x_y=[
 ["btn_oben_en","btn_oben_de",14,16,82,11],
@@ -680,7 +712,8 @@ var image_x_y=[
 ["btn_links_en","btn_links_de",2,28,11,146],
 ["btn_rechts_en","btn_rechts_de",97,28,11,146],
 ["btn_neustart_en","btn_neustart_de",112,16,39,11],
-["btn_sprache_en","btn_sprache_de",125,175,14,11],
+["btn_sprache_en","btn_sprache_de",112,175,14,11],
+["btn_stumm_gedrückt","btn_stumm_gedrückt",137,175,14,11],
 ];
 
 for (var i=0;i<image_names.length;i++){
@@ -751,6 +784,13 @@ function full(){
 var moving=false;
 
 function ErzeugenMöglich(){
+	for (var j=0;j<verborgene_zeilen;j++){
+		for (var i=0;i<raster_b;i++){
+			if (zustand[j][i]!==0){
+				return false;
+			}
+		}
+	}
 	var stück=tetrominos[nächst][nächst_drehung];
 	var nächst_z_h=stück.length;
 	var nächst_z_b=stück[0].length;
@@ -775,12 +815,15 @@ function ErzeugenMöglich(){
 
 async function doMove(dx,dy){
 	//stück erzeugen
-
+	if (verloren||siegreich){
+		return Promise.resolve(1);
+	}
 
 
 	if (dy==1){
 		if (ErzeugenMöglich()===false){
-			gameover=true;
+			verloren=true;
+			redraw();
 			return Promise.resolve(1);
 		}
 
@@ -803,6 +846,14 @@ async function doMove(dx,dy){
 		}
 
 		wähleNeuesStück();
+
+		if(!stumm){
+			playSound(4159307);
+		}
+	} else {
+		if(!stumm){
+			playSound(44213107);
+		}
 	}
 
 
@@ -917,12 +968,21 @@ async function doMove(dx,dy){
 			// if (dx!==0){
 			// 	return Promise.resolve(1);				
 			// }
+		} else {
+
+			if(!stumm){
+				playSound(67641907);
+			}
 		}
 
 	}
 
 	await prüfZeilen();
 
+	if (ErzeugenMöglich()===false){
+		verloren=true;
+		redraw();
+	}
 	return Promise.resolve(1);
 }
 
@@ -1000,6 +1060,15 @@ async function doPress(i){
 	} else if (i===5){
 		sprache=1-sprache;
 		// await resetGame();
+	} else if (i===6){
+		stumm=!stumm;
+		if (stumm===true){
+			image_x_y[6][0]="btn_stumm_aus_gedrückt";
+			image_x_y[6][1]="btn_stumm_aus_gedrückt";
+		} else {
+			image_x_y[6][0]="btn_stumm_gedrückt";
+			image_x_y[6][1]="btn_stumm_gedrückt";
+		}
 	}
 
 	moving=false;
@@ -1173,34 +1242,6 @@ function versuchFloodFill(x,y,todelete){
   return visited.length>0;
 }
 
-function tryClear(){
-	if (emptyCells().length===0){
-		if (gameover===false){
-			playSound(38733900);
-		}
-		gameover=true;
-		return false;
-	}
-  var todelete=[];
-  for (var i=0;i<gw;i++){
-    for (var j=0;j<gh;j++){
-      var zelle=state[i][j];
-      if (zelle==0){
-        continue;
-      }
-      if (versuchFloodFill(i,j,todelete)){
-      	score++;
-      }
-    }
-  }
-  for (var i=0;i<todelete.length;i++){
-    var idx=todelete[i];
-    var x = idx%gw;
-    var y = Math.floor(idx/gw)
-    clearCell(x,y);
-  }
-  return todelete.length>0;
-}
 
 function handleKeyDown(e){
 	if (e.key==="ArrowUp"||e.key=="W"||e.key=="w"){
@@ -1233,9 +1274,14 @@ function handleKeyDown(e){
 		e.preventDefault();
 		return false;
 	}
+	if (e.key.toLowerCase()==="m"||e.key.toLowerCase()==="M"){
+		doPress(6);
+		e.preventDefault();
+		return false;
+	}
 }
 
-var pressed=[false,false,false,false,false,false];
+var pressed=[false,false,false,false,false,false,false];
 
 function handleKeyUp(e){
 	if (e.key==="ArrowUp"||e.key=="W"||e.key=="w"){
@@ -1260,6 +1306,11 @@ function handleKeyUp(e){
 	}
 	if (e.key.toLowerCase()==="e"||e.key.toLowerCase()==="e"){
 		pressed[5]=false;
+		redraw();
+	}
+	// console.log("key
+	if (e.key.toLowerCase()==="m"||e.key.toLowerCase()==="M"){
+		pressed[6]=false;
 		redraw();
 	}
 	// console.log("keyup "+e.key)

@@ -1015,6 +1015,7 @@ function cacheSeed(seed){
 
 
 function playSound(seed) {
+  console.log("boo"+seed);
   if (muted){
     return;
   }
